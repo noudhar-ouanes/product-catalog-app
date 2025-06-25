@@ -1,21 +1,14 @@
-import { AntDesign } from '@expo/vector-icons';
+import ProductCard from '@/components/ProductCard';
+import { Product, ProductList } from '@/constants/Types';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import React, { useEffect, useState } from 'react';
-import { ActivityIndicator, FlatList, Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { ActivityIndicator, FlatList, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
 const filters = ['All', 'Clothing'];
-const products = [
-  { id: '1' },
-  { id: '2' },
-  { id: '3' },
-  { id: '4' },
-  { id: '5' },
-  { id: '6' },
-  { id: '7' },
-];
 
 export default function ProductCatalogScreen() {
     const [activeFilter, setActiveFilter] = useState('All');
-    const [productList, setProductList]= useState([])    
+    const [productList, setProductList]= useState<ProductList>([])    
     const [loading, setLoading]=useState<boolean>(false)
     // call API
     useEffect(() => {
@@ -24,9 +17,16 @@ export default function ProductCatalogScreen() {
             const res = await fetch('https://fakestoreapi.com/products');
             const data = await res.json();
             console.log('data: ', data);
-            // Add to track favorite status
-            const prepared = data.map(item => ({ ...item, favorite: false }));
-            setProductList(prepared);
+            //check if element is selected as favorite
+            const storedFavorites = await AsyncStorage.getItem('favoriteProductIds');
+            const favoriteProductIds: number[] = storedFavorites ? JSON.parse(storedFavorites) : [];
+
+            const preparedData = data.map((item: Product) => ({
+              ...item,
+              favorite: favoriteProductIds.includes(item.id),
+            }));
+
+            setProductList(preparedData);
         } catch (error) {
             console.error('Error fetching products:', error);
         } finally {
@@ -37,6 +37,21 @@ export default function ProductCatalogScreen() {
     fetchProducts();
   }, []);
  
+  const onFavoritePress = async (id: number) => {
+    const updatedProductList = productList.map((product) =>
+    product.id === id
+      ? { ...product, favorite: !product.favorite }
+      : product
+    );
+    setProductList(updatedProductList);
+
+    const favoriteProductIds = updatedProductList
+      .filter((p) => p.favorite)
+      .map((p) => p.id);
+
+    await AsyncStorage.setItem('favoriteProductIds', JSON.stringify(favoriteProductIds));
+    };
+
   return (
     <View style={styles.container}>
       <Text style={styles.title}>Product Catalog</Text>
@@ -64,29 +79,7 @@ export default function ProductCatalogScreen() {
             data={productList}
             keyExtractor={(item) => item.id.toString()}
             renderItem={({ item }) => (
-                <View style={styles.card}>
-                <Image
-                    source={{uri: item.image}}
-                    style={styles.imagePlaceholder}
-                    resizeMode='contain'
-                />
-                <View style={styles.details}>
-                    <View style={styles.textLine}>
-                    <Text style={styles.cardTitle} numberOfLines={1}>{item.title}</Text>
-                    </View>
-                    <View style={styles.textLine}>
-                    <Text numberOfLines={2}>{item.description}</Text>
-                    </View>
-                    <View style={styles.textLine}>
-                    <Text>${item.price}</Text>
-                    </View>
-                </View>
-                <TouchableOpacity
-                //  onPress={onFavoritePress}
-                 >
-                    <AntDesign name="hearto" size={20} color="black" />
-                </TouchableOpacity>
-                </View>
+                <ProductCard product={item} onFavoritePress={onFavoritePress}/>
             )}
             contentContainerStyle={{ paddingBottom: 20 }}
         />
@@ -140,14 +133,11 @@ const styles = StyleSheet.create({
   },
   details: {
     flex: 1,
-    // backgroundColor:'red',
     marginRight:10
   },
   cardTitle:{
-    // marginBottom: 6,
     fontSize:14,
     fontWeight:'600'
-
   },
   textLine: {
     marginBottom: 6,
