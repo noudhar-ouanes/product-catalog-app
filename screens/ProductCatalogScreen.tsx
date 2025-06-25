@@ -1,6 +1,6 @@
 import { AntDesign } from '@expo/vector-icons';
-import React from 'react';
-import { FlatList, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import React, { useEffect, useState } from 'react';
+import { ActivityIndicator, FlatList, Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
 const filters = ['All', 'Clothing'];
 const products = [
@@ -14,8 +14,29 @@ const products = [
 ];
 
 export default function ProductCatalogScreen() {
-  const [activeFilter, setActiveFilter] = React.useState('All');
+    const [activeFilter, setActiveFilter] = useState('All');
+    const [productList, setProductList]= useState([])    
+    const [loading, setLoading]=useState<boolean>(false)
+    // call API
+    useEffect(() => {
+        const fetchProducts = async () => {
+        try {
+            const res = await fetch('https://fakestoreapi.com/products');
+            const data = await res.json();
+            console.log('data: ', data);
+            // Add to track favorite status
+            const prepared = data.map(item => ({ ...item, favorite: false }));
+            setProductList(prepared);
+        } catch (error) {
+            console.error('Error fetching products:', error);
+        } finally {
+            setLoading(false);
+        }
+    };
 
+    fetchProducts();
+  }, []);
+ 
   return (
     <View style={styles.container}>
       <Text style={styles.title}>Product Catalog</Text>
@@ -35,22 +56,41 @@ export default function ProductCatalogScreen() {
         ))}
       </View>
 
-      <FlatList
-        data={products}
-        keyExtractor={item => item.id}
-        renderItem={() => (
-          <View style={styles.card}>
-            <View style={styles.imagePlaceholder} />
-            <View style={styles.details}>
-              <View style={styles.textLine} />
-              <View style={styles.textLineShort} />
-              <View style={styles.textLineTiny} />
-            </View>
-            <AntDesign name="hearto" size={20} color="black" />
-          </View>
-        )}
-        contentContainerStyle={{ paddingBottom: 20 }}
-      />
+       {loading ? (
+        <ActivityIndicator size="large" color="#000" />
+      ) : (
+        <FlatList
+            showsVerticalScrollIndicator={false}
+            data={productList}
+            keyExtractor={(item) => item.id.toString()}
+            renderItem={({ item }) => (
+                <View style={styles.card}>
+                <Image
+                    source={{uri: item.image}}
+                    style={styles.imagePlaceholder}
+                    resizeMode='contain'
+                />
+                <View style={styles.details}>
+                    <View style={styles.textLine}>
+                    <Text style={styles.cardTitle} numberOfLines={1}>{item.title}</Text>
+                    </View>
+                    <View style={styles.textLine}>
+                    <Text numberOfLines={2}>{item.description}</Text>
+                    </View>
+                    <View style={styles.textLine}>
+                    <Text>${item.price}</Text>
+                    </View>
+                </View>
+                <TouchableOpacity
+                //  onPress={onFavoritePress}
+                 >
+                    <AntDesign name="hearto" size={20} color="black" />
+                </TouchableOpacity>
+                </View>
+            )}
+            contentContainerStyle={{ paddingBottom: 20 }}
+        />
+      )}
     </View>
   );
 }
@@ -95,19 +135,22 @@ const styles = StyleSheet.create({
   imagePlaceholder: {
     width: 60,
     height: 60,
-    backgroundColor: '#D3D3D3',
     borderRadius: 8,
     marginRight: 12
   },
   details: {
-    flex: 1
+    flex: 1,
+    // backgroundColor:'red',
+    marginRight:10
+  },
+  cardTitle:{
+    // marginBottom: 6,
+    fontSize:14,
+    fontWeight:'600'
+
   },
   textLine: {
-    height: 10,
-    backgroundColor: '#B0B0B0',
-    borderRadius: 5,
     marginBottom: 6,
-    width: '80%'
   },
   textLineShort: {
     height: 10,
