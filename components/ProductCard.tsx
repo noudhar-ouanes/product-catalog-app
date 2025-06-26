@@ -3,12 +3,12 @@ import { AntDesign } from '@expo/vector-icons';
 import React from 'react';
 import { Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
-type Props = {
+type ProductCategoryCardProps = {
   product: Product;
   onFavoritePress: (id: number) => void;
 };
 
- const  ProductCard: React.FC<Props>= ({product,onFavoritePress })=> {
+ const  ProductCard: React.FC<ProductCategoryCardProps>= ({product,onFavoritePress })=> {
   return (
     <View style={styles.card}>
         <Image

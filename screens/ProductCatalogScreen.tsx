@@ -1,4 +1,6 @@
 import ProductCard from '@/components/ProductCard';
+import { Colors } from '@/constants/Colors';
+import { sortOptions } from '@/constants/Constants';
 import { ProductList } from '@/constants/Types';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import React, { useEffect, useMemo, useState } from 'react';
@@ -12,7 +14,6 @@ import {
   View
 } from 'react-native';
 
-const sortOptions = ['Default', 'Price: Low to High', 'Price: High to Low'];
 
 export default function ProductCatalogScreen() {
   const [productList, setProductList] = useState<ProductList>([]);
@@ -171,21 +172,22 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     padding: 20,
-    backgroundColor: '#F4F4F4'
+    backgroundColor: Colors.background
   },
   title: {
     fontSize: 24,
     fontWeight: 'bold',
-    marginBottom: 16
+    marginBottom: 16,
+    color: Colors.textPrimary
   },
   searchInput: {
     height: 40,
-    borderColor: '#CCC',
+    borderColor: Colors.border,
     borderWidth: 1,
     borderRadius: 8,
     paddingHorizontal: 12,
     marginBottom: 12,
-    backgroundColor: '#fff'
+    backgroundColor: Colors.inputBackground
   },
   filtersContainer: {
     flexDirection: 'row',
@@ -195,35 +197,37 @@ const styles = StyleSheet.create({
     paddingVertical: 6,
     paddingHorizontal: 12,
     borderRadius: 20,
-    backgroundColor: '#E0E0E0',
+    backgroundColor: Colors.filterButtonBackground,
     marginRight: 10
   },
   activeFilter: {
-    backgroundColor: '#AAAAAA'
+    backgroundColor: Colors.filterButtonActive
   },
   filterText: {
     fontSize: 14,
-    fontWeight: '500'
+    fontWeight: '500',
+    color: Colors.textPrimary
   },
   sortContainer: {
     flexDirection: 'row',
     flexWrap: 'wrap',
-    marginBottom: 12,
-  
+    marginBottom: 12
   },
   sortButton: {
     paddingVertical: 6,
     paddingHorizontal: 12,
     borderRadius: 20,
-    backgroundColor: '#fff0f3',
+    backgroundColor: Colors.sortButtonBackground,
     marginRight: 10,
-    marginTop: 6  
+    marginTop: 6
   },
   activeSort: {
-  backgroundColor: '#ffd3da'
+    backgroundColor: Colors.sortButtonActive
   },
   sortText: {
     fontSize: 14,
-    fontWeight: '500'
+    fontWeight: '500',
+    color: Colors.textPrimary
   }
 });
+

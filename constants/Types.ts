@@ -13,3 +13,5 @@ export type Product={
     
 }
 export type ProductList = Product[];
+
+export type SortOption = 'Default' | 'Price: Low to High' | 'Price: High to Low';
