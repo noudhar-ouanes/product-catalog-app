@@ -1,7 +1,7 @@
 import ProductCard from '@/components/ProductCard';
-import { Product, ProductList } from '@/constants/Types';
+import { ProductList } from '@/constants/Types';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import {
   ActivityIndicator,
   FlatList,
@@ -12,13 +12,15 @@ import {
   View
 } from 'react-native';
 
-const filters = ['All', 'Clothing'];
+const sortOptions = ['Default', 'Price: Low to High', 'Price: High to Low'];
 
 export default function ProductCatalogScreen() {
-  const [activeFilter, setActiveFilter] = useState('All');
   const [productList, setProductList] = useState<ProductList>([]);
   const [loading, setLoading] = useState<boolean>(false);
   const [searchQuery, setSearchQuery] = useState<string>('');
+  const [activeCategory, setActiveCategory] = useState<string>('All');
+  const [categories, setCategories] = useState<string[]>(['All']);
+  const [sortOption, setSortOption] = useState<string>('Default');
 
   // Fetch product data
   useEffect(() => {
@@ -26,16 +28,21 @@ export default function ProductCatalogScreen() {
       setLoading(true);
       try {
         const res = await fetch('https://fakestoreapi.com/products');
-        const data = await res.json();
+        const data: ProductList = await res.json();
 
         const storedFavorites = await AsyncStorage.getItem('favoriteProductIds');
         const favoriteProductIds: number[] = storedFavorites ? JSON.parse(storedFavorites) : [];
 
-        const newProductList = data.map((item: Product) => ({
+        const newProductList = data.map((item) => ({
           ...item,
           favorite: favoriteProductIds.includes(item.id),
         }));
 
+        const uniqueCategories = Array.from(
+          new Set(data.map((item) => item.category))
+        );
+
+        setCategories(['All', ...uniqueCategories]);
         setProductList(newProductList);
       } catch (error) {
         console.error('Error fetching products:', error);
@@ -47,7 +54,8 @@ export default function ProductCatalogScreen() {
     fetchProducts();
   }, []);
 
-  // Toggle favorite status
+  // choose favorite product
+
   const onFavoritePress = async (id: number) => {
     const updatedProductList = productList.map((product) =>
       product.id === id
@@ -63,10 +71,31 @@ export default function ProductCatalogScreen() {
     await AsyncStorage.setItem('favoriteProductIds', JSON.stringify(favoriteProductIds));
   };
 
-  // Filtered products by search
-  const filteredProducts = productList.filter((product) =>
-    product.title.toLowerCase().includes(searchQuery.toLowerCase())
-  );
+
+  const filteredAndSortedProducts = useMemo(() => {
+    let products = [...productList];
+
+    // filter by category
+    if (activeCategory !== 'All') {
+      products = products.filter((p) => p.category === activeCategory);
+    }
+
+    // Search filter
+    if (searchQuery) {
+      products = products.filter((p) =>
+        p.title.toLowerCase().includes(searchQuery.toLowerCase())
+      );
+    }
+
+    // sort by price
+    if (sortOption === 'Price: Low to High') {
+      products.sort((a, b) => a.price - b.price);
+    } else if (sortOption === 'Price: High to Low') {
+      products.sort((a, b) => b.price - a.price);
+    }
+
+    return products;
+  }, [productList, activeCategory, searchQuery, sortOption]);
 
   return (
     <View style={styles.container}>
@@ -78,28 +107,55 @@ export default function ProductCatalogScreen() {
         value={searchQuery}
         onChangeText={setSearchQuery}
       />
-
+      {/* shiow horizontal filter for product category */}
       <View style={styles.filtersContainer}>
-        {filters.map((filter) => (
-          <TouchableOpacity
-            key={filter}
-            style={[
-              styles.filterButton,
-              activeFilter === filter && styles.activeFilter
-            ]}
-            onPress={() => setActiveFilter(filter)}
-          >
-            <Text style={styles.filterText}>{filter}</Text>
-          </TouchableOpacity>
-        ))}
+        <FlatList
+          horizontal
+          data={categories}
+          keyExtractor={(item) => item}
+          renderItem={({ item }) => (
+            <TouchableOpacity
+              style={[
+                styles.filterButton,
+                activeCategory === item && styles.activeFilter
+              ]}
+              onPress={() => setActiveCategory(item)}
+            >
+              <Text style={styles.filterText}>{item}</Text>
+            </TouchableOpacity>
+          )}
+          showsHorizontalScrollIndicator={false}
+        />
       </View>
+      {/* sort by price */}
+     <View style={styles.sortContainer}>
+      <FlatList
+        horizontal
+        data={sortOptions}
+        keyExtractor={(item) => item}
+        renderItem={({ item }) => (
+          <TouchableOpacity
+            style={[
+              styles.sortButton,
+              sortOption === item && styles.activeSort
+            ]}
+            onPress={() => setSortOption(item)}
+          >
+            <Text style={styles.sortText}>{item}</Text>
+          </TouchableOpacity>
+        )}
+        showsHorizontalScrollIndicator={false}
+      />
+    </View>
+
+      {/* show product list */}
 
       {loading ? (
         <ActivityIndicator size="large" color="#000" />
       ) : (
         <FlatList
           showsVerticalScrollIndicator={false}
-          data={filteredProducts}
+          data={filteredAndSortedProducts}
           keyExtractor={(item) => item.id.toString()}
           renderItem={({ item }) => (
             <ProductCard product={item} onFavoritePress={onFavoritePress} />
@@ -133,19 +189,40 @@ const styles = StyleSheet.create({
   },
   filtersContainer: {
     flexDirection: 'row',
-    marginBottom: 16
+    marginBottom: 10
   },
   filterButton: {
     paddingVertical: 6,
-    paddingHorizontal: 16,
+    paddingHorizontal: 12,
     borderRadius: 20,
     backgroundColor: '#E0E0E0',
     marginRight: 10
   },
   activeFilter: {
-    backgroundColor: '#CCCCCC'
+    backgroundColor: '#AAAAAA'
   },
   filterText: {
+    fontSize: 14,
+    fontWeight: '500'
+  },
+  sortContainer: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    marginBottom: 12,
+  
+  },
+  sortButton: {
+    paddingVertical: 6,
+    paddingHorizontal: 12,
+    borderRadius: 20,
+    backgroundColor: '#fff0f3',
+    marginRight: 10,
+    marginTop: 6  
+  },
+  activeSort: {
+  backgroundColor: '#ffd3da'
+  },
+  sortText: {
     fontSize: 14,
     fontWeight: '500'
   }
