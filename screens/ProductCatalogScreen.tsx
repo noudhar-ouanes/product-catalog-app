@@ -101,12 +101,16 @@ export default function ProductCatalogScreen() {
   return (
     <View style={styles.container}>
       <Text style={styles.title}>Product Catalog</Text>
-
       <TextInput
         style={styles.searchInput}
         placeholder="Search products"
+        placeholderTextColor="#888" 
         value={searchQuery}
         onChangeText={setSearchQuery}
+        keyboardType="default"
+        autoCapitalize="none"
+        autoCorrect={false}
+        returnKeyType="search"
       />
       {/* shiow horizontal filter for product category */}
       <View style={styles.filtersContainer}>
