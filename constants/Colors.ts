@@ -11,6 +11,6 @@ export const Colors = {
   inputBackground: '#FFFFFF',
   filterButtonBackground: '#E0E0E0',
   filterButtonActive: '#AAAAAA',
-  sortButtonBackground: '#fff0f3',
-  sortButtonActive: '#ffd3da',
+  sortButtonBackground: '#E0E0E0',
+  sortButtonActive: '#AAAAAA',
 };
