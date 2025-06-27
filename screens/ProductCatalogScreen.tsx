@@ -1,6 +1,6 @@
 import ProductCard from '@/components/ProductCard';
 import { Colors } from '@/constants/Colors';
-import { sortOptions } from '@/constants/Constants';
+import { PAGE_SIZE, sortOptions } from '@/constants/Constants';
 import { ProductList } from '@/constants/Types';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import React, { useEffect, useMemo, useState } from 'react';
@@ -22,31 +22,54 @@ export default function ProductCatalogScreen() {
   const [activeCategory, setActiveCategory] = useState<string>('All');
   const [categories, setCategories] = useState<string[]>(['All']);
   const [sortOption, setSortOption] = useState<string>('Default');
+  const [visibleCount, setVisibleCount] = useState<number>(PAGE_SIZE);
 
-  // Fetch product data
+  // Fetch product data with offline cache
   useEffect(() => {
     const fetchProducts = async () => {
       setLoading(true);
       try {
+        const cached = await AsyncStorage.getItem('cachedProducts');
+        let cachedProducts: ProductList = [];
+
+        if (cached) {
+          cachedProducts = JSON.parse(cached);
+        }
+
         const res = await fetch('https://fakestoreapi.com/products');
         const data: ProductList = await res.json();
+        await AsyncStorage.setItem('cachedProducts', JSON.stringify(data));
+        cachedProducts = data;
 
         const storedFavorites = await AsyncStorage.getItem('favoriteProductIds');
         const favoriteProductIds: number[] = storedFavorites ? JSON.parse(storedFavorites) : [];
 
-        const newProductList = data.map((item) => ({
+        const newProductList = cachedProducts.map((item) => ({
           ...item,
           favorite: favoriteProductIds.includes(item.id),
         }));
 
-        const uniqueCategories = Array.from(
-          new Set(data.map((item) => item.category))
-        );
+        const uniqueCategories = Array.from(new Set(cachedProducts.map((item) => item.category)));
 
         setCategories(['All', ...uniqueCategories]);
         setProductList(newProductList);
       } catch (error) {
-        console.error('Error fetching products:', error);
+        console.error('Error fetching:', error);
+        const fallback = await AsyncStorage.getItem('cachedProducts');
+        if (fallback) {
+          const fallbackProducts: ProductList = JSON.parse(fallback);
+          const storedFavorites = await AsyncStorage.getItem('favoriteProductIds');
+          const favoriteProductIds: number[] = storedFavorites ? JSON.parse(storedFavorites) : [];
+
+          const newProductList = fallbackProducts.map((item) => ({
+            ...item,
+            favorite: favoriteProductIds.includes(item.id),
+          }));
+
+          const uniqueCategories = Array.from(new Set(fallbackProducts.map((item) => item.category)));
+          setCategories(['All', ...uniqueCategories]);
+          setProductList(newProductList);
+        }
       } finally {
         setLoading(false);
       }
@@ -55,40 +78,29 @@ export default function ProductCatalogScreen() {
     fetchProducts();
   }, []);
 
-  // choose favorite product
-
   const onFavoritePress = async (id: number) => {
-    const updatedProductList = productList.map((product) =>
-      product.id === id
-        ? { ...product, favorite: !product.favorite }
-        : product
+    const updatedList = productList.map((item) =>
+      item.id === id ? { ...item, favorite: !item.favorite } : item
     );
-    setProductList(updatedProductList);
+    setProductList(updatedList);
 
-    const favoriteProductIds = updatedProductList
-      .filter((p) => p.favorite)
-      .map((p) => p.id);
-
+    const favoriteProductIds = updatedList.filter(p => p.favorite).map(p => p.id);
     await AsyncStorage.setItem('favoriteProductIds', JSON.stringify(favoriteProductIds));
   };
-
 
   const filteredAndSortedProducts = useMemo(() => {
     let products = [...productList];
 
-    // filter by category
     if (activeCategory !== 'All') {
-      products = products.filter((p) => p.category === activeCategory);
+      products = products.filter(p => p.category === activeCategory);
     }
 
-    // Search filter
     if (searchQuery) {
-      products = products.filter((p) =>
+      products = products.filter(p =>
         p.title.toLowerCase().includes(searchQuery.toLowerCase())
       );
     }
 
-    // sort by price
     if (sortOption === 'Price: Low to High') {
       products.sort((a, b) => a.price - b.price);
     } else if (sortOption === 'Price: High to Low') {
@@ -98,21 +110,34 @@ export default function ProductCatalogScreen() {
     return products;
   }, [productList, activeCategory, searchQuery, sortOption]);
 
+  const visibleProducts = useMemo(() => {
+    return filteredAndSortedProducts.slice(0, visibleCount);
+  }, [filteredAndSortedProducts, visibleCount]);
+
+  const handleLoadMore = () => {
+    if (visibleCount < filteredAndSortedProducts.length) {
+      setVisibleCount(prev => prev + PAGE_SIZE);
+    }
+  };
+
+  useEffect(() => {
+    setVisibleCount(PAGE_SIZE);
+  }, [searchQuery, activeCategory, sortOption]);
+
   return (
     <View style={styles.container}>
       <Text style={styles.title}>Product Catalog</Text>
+
+      {/* Search */}
       <TextInput
         style={styles.searchInput}
         placeholder="Search products"
-        placeholderTextColor="#888" 
+        placeholderTextColor="#888"
         value={searchQuery}
         onChangeText={setSearchQuery}
-        keyboardType="default"
-        autoCapitalize="none"
-        autoCorrect={false}
-        returnKeyType="search"
       />
-      {/* shiow horizontal filter for product category */}
+
+      {/* Category Filter */}
       <View style={styles.filtersContainer}>
         <FlatList
           horizontal
@@ -132,40 +157,47 @@ export default function ProductCatalogScreen() {
           showsHorizontalScrollIndicator={false}
         />
       </View>
-      {/* sort by price */}
-     <View style={styles.sortContainer}>
-      <FlatList
-        horizontal
-        data={sortOptions}
-        keyExtractor={(item) => item}
-        renderItem={({ item }) => (
-          <TouchableOpacity
-            style={[
-              styles.sortButton,
-              sortOption === item && styles.activeSort
-            ]}
-            onPress={() => setSortOption(item)}
-          >
-            <Text style={styles.sortText}>{item}</Text>
-          </TouchableOpacity>
-        )}
-        showsHorizontalScrollIndicator={false}
-      />
-    </View>
 
-      {/* show product list */}
+      {/* Sort Options */}
+      <View style={styles.sortContainer}>
+        <FlatList
+          horizontal
+          data={sortOptions}
+          keyExtractor={(item) => item}
+          renderItem={({ item }) => (
+            <TouchableOpacity
+              style={[
+                styles.sortButton,
+                sortOption === item && styles.activeSort
+              ]}
+              onPress={() => setSortOption(item)}
+            >
+              <Text style={styles.sortText}>{item}</Text>
+            </TouchableOpacity>
+          )}
+          showsHorizontalScrollIndicator={false}
+        />
+      </View>
 
+      {/* Product List */}
       {loading ? (
         <ActivityIndicator size="large" color="#000" />
       ) : (
         <FlatList
-          showsVerticalScrollIndicator={false}
-          data={filteredAndSortedProducts}
+          data={visibleProducts}
           keyExtractor={(item) => item.id.toString()}
           renderItem={({ item }) => (
             <ProductCard product={item} onFavoritePress={onFavoritePress} />
           )}
           contentContainerStyle={{ paddingBottom: 20 }}
+          onEndReached={handleLoadMore}
+          onEndReachedThreshold={0.5}
+          ListFooterComponent={
+            visibleProducts.length < filteredAndSortedProducts.length ? (
+              <ActivityIndicator size="small" color="#000" style={{ marginVertical: 10 }} />
+            ) : null
+          }
+          showsVerticalScrollIndicator={false}
         />
       )}
     </View>
@@ -234,4 +266,3 @@ const styles = StyleSheet.create({
     color: Colors.textPrimary
   }
 });
-
