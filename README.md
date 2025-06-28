@@ -1,50 +1,94 @@
-# Welcome to your Expo app 👋
+# Product Catalog App
 
-This is an [Expo](https://expo.dev) project created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app).
+This is a React Native app built with **Expo** to display a catalog of products. It includes features like:
 
-## Get started
+- Product listing from a remote API with pagination 
+- Search bar functionality
+- Category filtering
+- Price sorting
+- Favorite and unfavorite product 
+- Offline caching of products
 
-1. Install dependencies
 
-   ```bash
-   npm install
-   ```
+## Tech Stack
 
-2. Start the app
+- **React Native**
+- **Expo**
+- **AsyncStorage**
+- **TypeScript**
+- **FlatList** 
 
-   ```bash
-   npx expo start
-   ```
+---
 
-In the output, you'll find options to open the app in a
+## 🚀 Getting Started
 
-- [development build](https://docs.expo.dev/develop/development-builds/introduction/)
-- [Android emulator](https://docs.expo.dev/workflow/android-studio-emulator/)
-- [iOS simulator](https://docs.expo.dev/workflow/ios-simulator/)
-- [Expo Go](https://expo.dev/go), a limited sandbox for trying out app development with Expo
+### 1. Prerequisites
 
-You can start developing by editing the files inside the **app** directory. This project uses [file-based routing](https://docs.expo.dev/router/introduction).
+Make sure you have the following installed:
 
-## Get a fresh project
+- **Node.js** (v18 or newer recommended)
+- **Yarn** or **npm**
+- **Expo CLI**  
+  ```bash
+  npm install -g expo-cli
 
-When you're ready, run:
+### 2. Clone repository
+git clone https://github.com/your-username/product-catalog-app.git
+cd product-catalog-app
 
-```bash
-npm run reset-project
-```
+### 3. Install dependencies
+yarn install
+# or
+npm install
 
-This command will move the starter code to the **app-example** directory and create a blank **app** directory where you can start developing.
+### 4. Run the app
+yarn start
+# or
+npm run start
+# or
+expo start
 
-## Learn more
+This will launch the Expo DevTools in your browser. You can now:
+- Press a to run on an Android emulator
+- Press i to run on an iOS simulator on macOS
+- Scan the QR code with the Expo Go app on your phone
 
-To learn more about developing your project with Expo, look at the following resources:
+### 5. Folder Structure
 
-- [Expo documentation](https://docs.expo.dev/): Learn fundamentals, or go into advanced topics with our [guides](https://docs.expo.dev/guides).
-- [Learn Expo tutorial](https://docs.expo.dev/tutorial/introduction/): Follow a step-by-step tutorial where you'll create a project that runs on Android, iOS, and the web.
+.
+├── app/
+│   └── index.tsx  
+├── assets/                   # Images and fonts
+├── components/
+│   └── ProductCard.tsx      # Reusable product card
+├── constants/               # Colors, constants, types
+├── screens/
+│   └── ProductCatalogScreen.tsx
+├── README.md
+├── tsconfig.json
+├── package.json
 
-## Join the community
+### 5. Environment & Configuration
 
-Join our community of developers creating universal apps.
+- API used: https://fakestoreapi.com/products
 
-- [Expo on GitHub](https://github.com/expo/expo): View our open source platform and contribute.
-- [Discord community](https://chat.expo.dev): Chat with Expo users and ask questions.
+- Local storage: Uses @react-native-async-storage/async-storage
+
+- Favorites: Stored by product ID in AsyncStorage
+
+- Pagination: Simple client-side using PAGE_SIZE constant
+
+### 6. Screenshots
+
+![Product Screen](./assets/images/screenshots/productFavorite.png)
+
+### Filter 
+![Filter Screen](./assets/images/screenshots/sortedproductList.png)
+
+### Search
+![Search Screen](./assets/images/screenshots/searchScreen.png)
+
+### 7. Author
+
+Noudhar Ouanes
+LinkedIn : https://www.linkedin.com/in/noudhar-ouanes-464840194/
