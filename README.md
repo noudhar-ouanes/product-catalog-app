@@ -54,18 +54,7 @@ This will launch the Expo DevTools in your browser. You can now:
 
 ### 5. Folder Structure
 
-.
-├── app/
-│ └── index.tsx
-├── assets/ # Images
-├── components/
-│ └── ProductCard.tsx # Reusable product card
-├── constants/ # Colors, constants, types
-├── screens/
-│ └── ProductCatalogScreen.tsx
-├── README.md
-├── tsconfig.json
-├── package.json
+<pre> ``` . ├── app/ │ └── index.tsx ├── assets/ # Images ├── components/ │ └── ProductCard.tsx # Reusable product card ├── constants/ # Colors, constants, types ├── screens/ │ └── ProductCatalogScreen.tsx ├── README.md ├── tsconfig.json ├── package.json ``` </pre>
 
 ### 5. Environment & Configuration
 
