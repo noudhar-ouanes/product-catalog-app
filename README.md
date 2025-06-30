@@ -37,14 +37,14 @@ cd product-catalog-app
 
 ### 3. Install dependencies
 yarn install
-# or
+or
 npm install
 
 ### 4. Run the app
 yarn start
-# or
+or
 npm run start
-# or
+or
 expo start
 
 This will launch the Expo DevTools in your browser. You can now:
@@ -56,13 +56,13 @@ This will launch the Expo DevTools in your browser. You can now:
 
 .
 ├── app/
-│   └── index.tsx  
-├── assets/                   # Images 
+│ └── index.tsx
+├── assets/ # Images
 ├── components/
-│   └── ProductCard.tsx      # Reusable product card
-├── constants/               # Colors, constants, types
+│ └── ProductCard.tsx # Reusable product card
+├── constants/ # Colors, constants, types
 ├── screens/
-│   └── ProductCatalogScreen.tsx
+│ └── ProductCatalogScreen.tsx
 ├── README.md
 ├── tsconfig.json
 ├── package.json
@@ -79,16 +79,16 @@ This will launch the Expo DevTools in your browser. You can now:
 
 ### 6. Screenshots
 
-![Product Screen](./assets/images/screenshots/productFavorite.png)
-
-### Filter 
-![Filter Screen](./assets/images/screenshots/filtredProductScreen.png)
-
-### Sort 
-![Sort by price Screen](./assets/images/screenshots/sortedProduct.png)
-
-### Search
-![Search Screen](./assets/images/screenshots/searchScreen.png)
+<table>
+  <tr>
+    <td><img src="./assets/images/screenshots/productFavorite.png" alt="Product Screen" width="300"/></td>
+    <td><img src="./assets/images/screenshots/filtredProductScreen.png" alt="Filter Screen" width="300"/></td>
+  </tr>
+  <tr>
+    <td><img src="./assets/images/screenshots/sortedProduct.png" alt="Sort Screen" width="300"/></td>
+    <td><img src="./assets/images/screenshots/searchScreen.png" alt="Search Screen" width="300"/></td>
+  </tr>
+</table>
 
 ### 7. Author
 
