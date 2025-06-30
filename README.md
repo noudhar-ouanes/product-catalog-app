@@ -76,7 +76,14 @@ This will launch the Expo DevTools in your browser. You can now:
   </tr>
 </table>
 
-### 7. Author
+
+### 7. Improvements
+
+What I’d improve with more time
+- Add comprehensive error handling and user feedback for network failures.
+- Implement unit test 
+
+### 8. Author
 
 Noudhar Ouanes
 LinkedIn : https://www.linkedin.com/in/noudhar-ouanes-464840194/
