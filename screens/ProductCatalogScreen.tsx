@@ -1,3 +1,4 @@
+import CategoryFilterButton from '@/components/CategoryFilterButton';
 import ProductCard from '@/components/ProductCard';
 import { Colors } from '@/constants/Colors';
 import { PAGE_SIZE, sortOptions } from '@/constants/Constants';
@@ -13,7 +14,6 @@ import {
   TouchableOpacity,
   View
 } from 'react-native';
-
 
 export default function ProductCatalogScreen() {
   const [productList, setProductList] = useState<ProductList>([]);
@@ -50,7 +50,6 @@ export default function ProductCatalogScreen() {
         }));
 
         const uniqueCategories = Array.from(new Set(cachedProducts.map((item) => item.category)));
-
         setCategories(['All', ...uniqueCategories]);
         setProductList(newProductList);
       } catch (error) {
@@ -137,22 +136,18 @@ export default function ProductCatalogScreen() {
         onChangeText={setSearchQuery}
       />
 
-      {/* Category Filter */}
+      {/* Category Filters */}
       <View style={styles.filtersContainer}>
         <FlatList
           horizontal
           data={categories}
           keyExtractor={(item) => item}
           renderItem={({ item }) => (
-            <TouchableOpacity
-              style={[
-                styles.filterButton,
-                activeCategory === item ? styles.activeFilter : styles.inactiveFilter
-              ]}
+            <CategoryFilterButton
+              label={item}
+              isActive={activeCategory === item}
               onPress={() => setActiveCategory(item)}
-            >
-              <Text style={[styles.filterText,{color:activeCategory === item ? Colors.textSecondary : Colors.sortButtonActive}]}>{item}</Text>
-            </TouchableOpacity>
+            />
           )}
           showsHorizontalScrollIndicator={false}
         />
@@ -168,11 +163,18 @@ export default function ProductCatalogScreen() {
             <TouchableOpacity
               style={[
                 styles.sortButton,
-                sortOption === item ?styles.activeSort: styles.inactiveSort
+                sortOption === item ? styles.activeSort : styles.inactiveSort
               ]}
               onPress={() => setSortOption(item)}
             >
-              <Text style={[styles.sortText,{color:sortOption === item ? Colors.textSecondary : Colors.sortButtonActive}]}>{item}</Text>
+              <Text
+                style={[
+                  styles.sortText,
+                  { color: sortOption === item ? Colors.textSecondary : Colors.sortButtonActive }
+                ]}
+              >
+                {item}
+              </Text>
             </TouchableOpacity>
           )}
           showsHorizontalScrollIndicator={false}
@@ -224,38 +226,14 @@ const styles = StyleSheet.create({
     paddingHorizontal: 12,
     marginBottom: 12,
     backgroundColor: Colors.inputBackground,
-      shadowColor: Colors.shadowColor,
+    shadowColor: Colors.shadowColor,
     shadowOffset: { width: 0, height: 5 },
     shadowOpacity: 0.1,
     shadowRadius: 1,
   },
   filtersContainer: {
     flexDirection: 'row',
-  },
-  filterButton: {
-    paddingVertical: 6,
-    paddingHorizontal: 12,
-    borderRadius: 20,
-    backgroundColor: Colors.filterButtonBackground,
-    marginRight: 10,
-    shadowColor: Colors.shadowColor,
-    shadowOffset: { width: 0, height: 5 },
-    shadowOpacity: 0.1,
-    shadowRadius: 1,
-    marginBottom:10
-  },
-  activeFilter: {
-    backgroundColor: Colors.filterButtonActive
-  },
-  inactiveFilter: {
-    backgroundColor: Colors.background,
-    borderWidth:1,
-    borderColor:Colors.sortButtonActive,
-  },
-  filterText: {
-    fontSize: 14,
-    fontWeight: '500',
-    color: Colors.textPrimary
+    marginBottom: 8,
   },
   sortContainer: {
     flexDirection: 'row',
@@ -268,21 +246,19 @@ const styles = StyleSheet.create({
     borderRadius: 20,
     backgroundColor: Colors.sortButtonBackground,
     marginRight: 10,
-     shadowColor: Colors.shadowColor,
+    shadowColor: Colors.shadowColor,
     shadowOffset: { width: 0, height: 5 },
     shadowOpacity: 0.1,
     shadowRadius: 1,
-    marginBottom:10
-
+    marginBottom: 10
   },
   activeSort: {
     backgroundColor: Colors.sortButtonActive,
-  
   },
-   inactiveSort: {
-    backgroundColor:Colors.background,
-    borderWidth:1,
-    borderColor:Colors.sortButtonActive
+  inactiveSort: {
+    backgroundColor: Colors.background,
+    borderWidth: 1,
+    borderColor: Colors.sortButtonActive
   },
   sortText: {
     fontSize: 14,
