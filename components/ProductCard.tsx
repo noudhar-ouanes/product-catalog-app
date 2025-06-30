@@ -1,3 +1,4 @@
+import { Colors } from '@/constants/Colors';
 import { Product } from '@/constants/Types';
 import { AntDesign } from '@expo/vector-icons';
 import React from 'react';
@@ -24,7 +25,10 @@ type ProductCategoryCardProps = {
                 <Text numberOfLines={2}>{product.description}</Text>
             </View>
             <View style={styles.textLine}>
-                <Text>${product.price}</Text>
+                <Text style={{fontWeight:'500'}}>Category: {product.category}</Text>
+            </View>
+            <View style={styles.textLine}>
+                <Text style={styles.price}>${product.price}</Text>
             </View>
         </View>
         <TouchableOpacity
@@ -49,10 +53,10 @@ const styles = StyleSheet.create({
         padding: 12,
         alignItems: 'center',
         marginBottom: 12,
-        shadowColor: "#E4E7ED",
-        shadowOffset: { width: 0, height: 10 },
-        shadowOpacity: 0.4,
-        shadowRadius: 10
+        shadowColor: Colors.shadowColor,
+        shadowOffset: { width: 0, height: 5 },
+        shadowOpacity: 0.1,
+        shadowRadius: 1
     }, imagePlaceholder: {
         width: 60,
         height: 60,
@@ -70,5 +74,8 @@ const styles = StyleSheet.create({
     textLine: {
         marginBottom: 6,
     },
-  
+  price:{
+    color:Colors.textThird,
+    fontWeight:'500'
+  }
 })

@@ -26,10 +26,9 @@ This is a React Native app built with **Expo** to display a catalog of products.
 
 Make sure you have the following installed:
 
-- **Node.js** (v18 or newer recommended)
+- **Node.js** (v18 or newer)
 - **Yarn** or **npm**
 - **Expo CLI**  
-  ```bash
   npm install -g expo-cli
 
 ### 2. Clone repository
@@ -58,7 +57,7 @@ This will launch the Expo DevTools in your browser. You can now:
 .
 ├── app/
 │   └── index.tsx  
-├── assets/                   # Images and fonts
+├── assets/                   # Images 
 ├── components/
 │   └── ProductCard.tsx      # Reusable product card
 ├── constants/               # Colors, constants, types
@@ -83,7 +82,10 @@ This will launch the Expo DevTools in your browser. You can now:
 ![Product Screen](./assets/images/screenshots/productFavorite.png)
 
 ### Filter 
-![Filter Screen](./assets/images/screenshots/sortedproductList.png)
+![Filter Screen](./assets/images/screenshots/filtredProductScreen.png)
+
+### Sort 
+![Sort by price Screen](./assets/images/screenshots/sortedProduct.png)
 
 ### Search
 ![Search Screen](./assets/images/screenshots/searchScreen.png)

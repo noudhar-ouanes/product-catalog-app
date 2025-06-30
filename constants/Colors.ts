@@ -7,10 +7,13 @@
 export const Colors = {
   background: '#F4F4F4',
   textPrimary: '#000000',
+  textSecondary:'#FFFFFF',
+  textThird:'#7c65f2',
   border: '#CCCCCC',
   inputBackground: '#FFFFFF',
   filterButtonBackground: '#E0E0E0',
-  filterButtonActive: '#AAAAAA',
-  sortButtonBackground: '#E0E0E0',
-  sortButtonActive: '#AAAAAA',
+  filterButtonActive: '#7c65f2',
+  sortButtonBackground: '#d5caee',
+  sortButtonActive: '#7c65f2',
+  shadowColor:'#98999d'
 };
