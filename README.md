@@ -52,9 +52,6 @@ This will launch the Expo DevTools in your browser. You can now:
 - Press i to run on an iOS simulator on macOS
 - Scan the QR code with the Expo Go app on your phone
 
-### 5. Folder Structure
-
-<pre> ``` . ├── app/ │ └── index.tsx ├── assets/ # Images ├── components/ │ └── ProductCard.tsx # Reusable product card ├── constants/ # Colors, constants, types ├── screens/ │ └── ProductCatalogScreen.tsx ├── README.md ├── tsconfig.json ├── package.json ``` </pre>
 
 ### 5. Environment & Configuration
 
