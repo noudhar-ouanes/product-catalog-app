@@ -37,14 +37,14 @@ cd product-catalog-app
 
 ### 3. Install dependencies
 yarn install
-#or
+# or
 npm install
 
 ### 4. Run the app
 yarn start
-#or
+# or
 npm run start
-#or
+# or
 expo start
 
 This will launch the Expo DevTools in your browser. You can now:
