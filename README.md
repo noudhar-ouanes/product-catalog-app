@@ -32,7 +32,7 @@ Make sure you have the following installed:
   npm install -g expo-cli
 
 ### 2. Clone repository
-git clone https://github.com/your-username/product-catalog-app.git
+git clone https://github.com/noudhar-ouanes/product-catalog-app.git
 cd product-catalog-app
 
 ### 3. Install dependencies
